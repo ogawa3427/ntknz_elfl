@@ -9,6 +9,7 @@ String inputString2 = "";         // a string to hold incoming data
 
 FingerEncoder fingerEncoder;
 FingerEncoder::Finger finger;
+ToneEncoder toneEncoder;
 
 #define HX711_PIN_DOUT 5
 #define HX711_PIN_SCK 6
@@ -59,6 +60,9 @@ void loop() {
 
   if (inputString != inputString2 || lastOcta != octa) {
     finger = fingerEncoder.encode(inputString);
+
+    String tone = ToneEncoder::encodeToTone(finger, octa);
+    
     USBSerial.print("l1: ");
     USBSerial.print(finger.l1);
     USBSerial.print(" l2: ");
