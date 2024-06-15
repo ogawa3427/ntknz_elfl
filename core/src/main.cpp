@@ -3,7 +3,9 @@
 
 #include <tones.h>
 #include <HX711.h>
+#include <notes.h>
 
+#include <M5UnitSynth.h>
 String inputString = "";         // a string to hold incoming data
 String inputString2 = "";         // a string to hold incoming data
 
@@ -18,13 +20,42 @@ HX711 scale;
 #define TOP_BORDER 1600000
 #define LOWER_BORDER 1100000
 
-enum Octa {
-  THREE, T_F, FOUR
-};
 
 Octa octa = FOUR;
 Octa lastOcta = FOUR;
 
+M5UnitSynth synth;
+
+
+int instrument = 3; //11; //10; //25;
+
+int tempo = 80;
+
+
+	// synth.setInstrument(0, 0, instrument);
+	// synth.setNoteOn(0, melody[thisNote], 127); //noteDuration * 0.9);
+  //   // Wait for the specief duration before playing the next note.
+  //   delay(noteDuration);
+  //   // stop the waveform generation before the next note.
+  //   synth.setNoteOff(0, melody[thisNote], 127);
+
+std::string octaToString(Octa octa) {
+    switch (octa) {
+        case THREE: return "THREE";
+        case FOUR: return "FOUR";
+        case T_F: return "T_F";
+        default: return "UNKNOWN";
+    }
+}
+
+void playTone(int tone) {
+  synth.setInstrument(0, 0, 74);
+  if (tone == -1) {
+    synth.setNoteOff(0, NOTE_C4, 127);
+  } else {
+    synth.setNoteOn(0, tone, 127);
+  }
+}
 
 void setup() {
   Wire.begin();
@@ -32,7 +63,11 @@ void setup() {
 
   scale.begin(HX711_PIN_DOUT, HX711_PIN_SCK);
 
-
+  synth.begin(&Serial1, UNIT_SYNTH_BAUD, 1, 2);
+  synth.setInstrument(0, 0, 74);
+  synth.setNoteOn(0, NOTE_C4, 127);
+  delay(1000);
+  synth.setNoteOff(0, NOTE_C4, 127);
 }
 
 void loop() {
@@ -61,7 +96,15 @@ void loop() {
   if (inputString != inputString2 || lastOcta != octa) {
     finger = fingerEncoder.encode(inputString);
 
-    String tone = ToneEncoder::encodeToTone(finger, octa);
+    int tone = toneEncoder.encodeToTone(finger, octa);
+    static int lastTone = -1;
+    synth.setNoteOff(0, lastTone, 127);
+    lastTone = tone;
+
+    playTone(tone);
+
+    USBSerial.print("Tone: ");
+    USBSerial.println(tone);
     
     USBSerial.print("l1: ");
     USBSerial.print(finger.l1);
@@ -87,11 +130,11 @@ void loop() {
     USBSerial.println(finger.r5_3);
 
     inputString2 = inputString;
-    USBSerial.println(inputString);
+    // USBSerial.println(inputString);
     inputString = "";
 
     USBSerial.print("Octa: ");
-    USBSerial.println(octa);
+    USBSerial.println(octaToString(octa).c_str());
     lastOcta = octa;
   }
   delay(10);

@@ -1,5 +1,10 @@
 #include <string>
 #include <iostream>
+#include <notes.h>
+
+enum Octa {
+    THREE, FOUR, T_F
+};
 
 class FingerEncoder {
     public:
@@ -34,7 +39,7 @@ class FingerEncoder {
         input[14] == '1' ? finger.r4 = true : finger.r4 = false;
         input[13] == '0' ? finger.r5_1 = true : finger.r5_1 = false;
         input[12] == '1' ? finger.r5_2 = true : finger.r5_2 = false;
-        input[11] == '0' ? finger.r5_3 = true : finger.r5_3 = false;
+        input[11] == '1' ? finger.r5_3 = true : finger.r5_3 = false;
 
         return finger;
     }
@@ -42,154 +47,197 @@ class FingerEncoder {
 
 
 enum Tone {
-    C3, Des3, D3, Es3, E3, F3, Ges3, G3, As3, A3, B3, H3,
-    C4, Des4, D4, Es4, E4, F4, Ges4, G4, As4, A4, B4, H4,
-    C5, Des5, D5, Es5, E5, F5, Ges5, G5, As5, A5, B5, H5, Error
+    C3, Des3, D3, Es3, E3, F3, Ges3, G3_, As3, A3, B3, H3,
+    C4, Des4, D4, Es4, E4, F4, Ges4, G4_, As4, A4, B4, H4,
+    C5, Des5, D5, Es5, E5, F5, Ges5, G5_, As5, A5, B5, H5, Error
+};
+
+std::string toneToString(Tone tone) {
+    switch (tone) {
+        case C3: return "C3";
+        case Des3: return "Des3";
+        case D3: return "D3";
+        case Es3: return "Es3";
+        case E3: return "E3";
+        case F3: return "F3";
+        case Ges3: return "Ges3";
+        case G3_: return "G3_";
+        case As3: return "As3";
+        case A3: return "A3";
+        case B3: return "B3";
+        case H3: return "H3";
+        case C4: return "C4";
+        case Des4: return "Des4";
+        case D4: return "D4";
+        case Es4: return "Es4";
+        case E4: return "E4";
+        case F4: return "F4";
+        case Ges4: return "Ges4";
+        case G4_: return "G4_";
+        case As4: return "As4";
+        case A4: return "A4";
+        case B4: return "B4";
+        case H4: return "H4";
+        case C5: return "C5";
+        case Des5: return "Des5";
+        case D5: return "D5";
+        case Es5: return "Es5";
+        case E5: return "E5";
+        case F5: return "F5";
+        case Ges5: return "Ges5";
+        case G5_: return "G5_";
+        case As5: return "As5";
+        case A5: return "A5";
+        case B5: return "B5";
+        case H5: return "H5";
+        case Error: return "Error";
+        default: return "Error";
+    }
 }
 
 class ToneEncoder {
     public:
     ToneEncoder() {}
 
-    std::string encodeToTone(const FingerEncoder::Finger& finger, Octa octa) {
+    int encodeToTone(const FingerEncoder::Finger& finger, Octa octa) {
         if (finger.l1 && finger.l2 && finger.l3 && finger.l4 &&             finger.r2 && finger.r3 && finger.r4 &&           finger.r5_3) {
-            return C3;
+            return NOTE_C3;
         } else if (finger.l1 && finger.l2 && finger.l3 && finger.l4 &&             finger.r2 && finger.r3 && finger.r4 &&           finger.r5_2 && !finger.r5_3) {
-            return Des3;
-        } else if (finger.l1 && finger.l2 && finger.l3 && finger.l4 &&             finger.r2 && finger.r3 && finger.r4 && !finger.r5_1 && !finger.r5_2 && !finger.r5_3) {
+            return NOTE_CS3;
+        } else if (             finger.l2 && finger.l3 && finger.l4 &&             finger.r2 && finger.r3 && finger.r4 && !finger.r5_1 && !finger.r5_2 && !finger.r5_3) {
             if (octa == THREE) {
-                return D3;
+                return NOTE_D3;
             } else {
-                return D4;
+                return NOTE_D4;
             }
-        } else if (finger.l1 && finger.l2 && finger.l3 && finger.l4 &&             finger.r2 && finger.r3 && finger.r4 && finger.r5_1) {
+        } else if (             finger.l1 && finger.l3 && finger.l4 &&             finger.r2 && finger.r3 && finger.r4 && finger.r5_1) {
             if (octa == THREE) {
-                return Es3;
+                return NOTE_DS3;
             } else {
-                return Es4;
+                return NOTE_DS4;
             }
         } else if (finger.l1 && finger.l2 && finger.l3 && finger.l4 &&             finger.r2 && finger.r3 && !finger.r4) {
             if (octa == THREE) {
-                return E3;
+                return NOTE_E3;
             } else {
-                return E4;
+                return NOTE_E4;
             }
         } else if (finger.l1 && finger.l2 && finger.l3 && finger.l4 &&             finger.r2 && !finger.r3 && !finger.r4) {
             if (octa == THREE) {
-                return F3;
+                return NOTE_F3;
             } else {
-                return F4;
+                return NOTE_F4;
             }
-        } else if (finger.l1 && finger.l2 && finger.l3 && finger.l4 && !finger.l5 && !finger.r2 &&               !finger.r4) {
+        } else if (finger.l1 && finger.l2 && finger.l3 && finger.l4 && !finger.l5 && !finger.r2 && finger.r3 && !finger.r4) {
             if (octa == THREE) {
-                return Ges3;
+                return NOTE_FS3;
             } else {
-                return Ges4;
+                return NOTE_FS4;
             }
         } else if (finger.l1 && finger.l2 && finger.l3 && finger.l4 && !finger.l5 && !finger.r2 && !finger.r3 && !finger.r4) {
             if (octa == THREE || octa == T_F) {
-                return G3;
+                return NOTE_G3;
             } else {
-                return G4;
+                return NOTE_G4;
             }
-        } else if (finger.l1 && finger.l2 && finger.l3 && finger.l4 && !finger.l5) {
+        } else if (finger.l1 && finger.l2 && finger.l3 && finger.l4 && finger.l5 && !finger.r2 && !finger.r3 && !finger.r4) {
             if (octa == THREE || octa == T_F) {
-                return As3;
+                return NOTE_GS3;
             } else {
-                return As4;
+                return NOTE_GS4;
             }
-        } else if (finger.l1 && finger.l2 && finger.l3 && !finger.l4 && !finger.l5) {
+        } else if (finger.l1 && finger.l2 && finger.l3 && !finger.l4 && !finger.l5 && !finger.r2) {
             if (octa == THREE || octa == T_F) {
-                return A3;
+                return NOTE_A3;
             } else {
-                return A4;
+                return NOTE_A4;
             }
-        } else if (finger.l1 && finger.l2 && !finger.l3 && !finger.l4 && !finger.l5 && finger.r5_1) {
+        } else if (finger.l1 && finger.l2 && !finger.l4 && !finger.l5 && finger.r2 && finger.r5_1) {
             if (octa == THREE || octa == T_F) {
-                return B3;
+                return NOTE_AS3;
             } else {
-                return B4;
+                return NOTE_AS4;
             }
-        } else if (finger.l1 && finger.l2 && !finger.l3 && !finger.l4 && !finger.l5 && finger.r5_2) {
+        } else if (finger.l1 && finger.l2 && !finger.l3 && !finger.l4 && !finger.l5 && !finger.r5_2) {
             if (octa == THREE || octa == T_F) {
-                return H3;
+                return NOTE_B3;
             } else {
-                return H4;
+                return NOTE_B4;
             }
         } else if (!finger.l1 && finger.l2 && !finger.l3 && !finger.l4 && !finger.l5 && !finger.r2 && !finger.r3 && !finger.r4 && finger.r5_1) {
             if (octa == THREE || octa == T_F) {
-                return C4;
+                return NOTE_C4;
             } else {
-                return C5;
+                return NOTE_C5;
             }
-        } else if (!finger,l1 && !finger.l2 && !finger.l3 && !finger.l4 && !finger.l5 && !finger.r2 && !finger.r3 && !finger.r4 && finger.r5_1) {
+        } else if (!finger.l1 && !finger.l2 && !finger.l3 && !finger.l4 && !finger.l5 && !finger.r2 && !finger.r3 && !finger.r4 && finger.r5_1) {
             if (octa == T_F || octa == FOUR) {
-                return Des4;
+                return NOTE_CS4;
             } else {
-                return Error;
+                return NOTE_CS5;
             }
         } else if (finger.l1 && !finger.l2 && finger.l3 && finger.l4 && !finger.l5) {
             if (octa == T_F || octa == FOUR) {
-                return D5;
+                return NOTE_D5;
             } else {
-                return Error;
+                return -1;
             }
-        } else if (finger.l1               && finger.l3 && finger.l4 && fonger.l5 && finger.r2 && finger.r3 && finger.r4 && finger.r5_1) {
+        } else if (finger.l1               && finger.l3 && finger.l4 && finger.l5 && finger.r2 && finger.r3 && finger.r4 && finger.r5_1) {
             if (octa == T_F || octa == FOUR) {
-                return Es5;
+                return NOTE_DS5;
             } else {
-                return Error;
+                return -1;
             }
         } else if (finger.l1 && finger.l2 && finger.l3 && !finger.l4 && !finger.l5 && finger.r2 && finger.r3 && !finger.r4 && finger.r5_1) {
             if (octa == T_F || octa == FOUR) {
-                return E5;
+                return NOTE_E5;
             } else {
-                return Error;
+                return -1;
             }
         } else if (finger.l1 && finger.l2 && !finger.l3 && finger.l4 &&               finger.r2              && !finger.r4 && finger.r5_1) {
             if (octa == T_F || octa == FOUR) {
-                return F5;
+                return NOTE_F5;
             } else {
-                return Error;
+                return -1;
             }
-        } else if (finger.l1 && finger.l2 && !finger.l3 && finger.l4 &&               !finger.r2             && finger,r4 && finger.r5_1) {
+        } else if (finger.l1 && finger.l2 && !finger.l3 && finger.l4 &&               !finger.r2             && finger.r4 && finger.r5_1) {
             if (octa == T_F || octa == FOUR) {
-                return Ges5;
+                return NOTE_FS5;
             } else {
-                return Error;
+                return -1;
             }
         } else if (!finger.l1 && finger.l2 && finger.l3 && finger.l4 &&               !finger.r2 && !finger.r3 && !finger.r4 && finger.r5_1) {
             if (octa == T_F || octa == FOUR) {
-                return G5;
+                return NOTE_G5;
             } else {
-                return Error;
+                return -1;
             }             
         } else if (!finger.l1 && !finger.l2 && finger.l3 && finger.l4 && finger.l5  && !finger.r2 && !finger.r3 && !finger.r4 && finger.r5_1) {
             if (octa == T_F || octa == FOUR) {
-                return As5;
+                return NOTE_GS5;
             } else {
-                return Error;
+                return -1;
             }
-        } else if (finger.l1 && !finger.l2 && finger.l3 && !finger.l4 &&           && finger.r2 && !finger.r3 && !finger.r4 && finger.r5_1) {
+        } else if (finger.l1 && !finger.l2 && finger.l3 && !finger.l4 &&              finger.r2 && !finger.r3 && !finger.r4 && finger.r5_1) {
             if (octa == T_F || octa == FOUR) {
-                return A5;
+                return NOTE_A5;
             } else {
-                return Error;
+                return -1;
             }
-        } else if (finger.l1 && !finger.l2 && !finger.l3 && !finger.l4 &&           && finger.r2 && !finger.r3 && !finger.r4 && finger.r5_1) {
+        } else if (finger.l1 && !finger.l2 && !finger.l3 && !finger.l4 &&              finger.r2 && !finger.r3 && !finger.r4 && finger.r5_1) {
             if (octa == T_F || octa == FOUR) {
-                return B5;
+                return NOTE_AS5;
             } else {
-                return Error;
+                return -1;
             }
-        } else if (finger.l1 && finger.l2 && !finger.l3 && finger.l4 &&           && !finger.r2 && !finger.r3 && !finger.r4) {
+        } else if (finger.l1 && finger.l2 && !finger.l3 && finger.l4 &&              !finger.r2 && !finger.r3 && !finger.r4) {
             if (octa == T_F || octa == FOUR) {
-                return H5;
+                return NOTE_B5;
             } else {
-                return Error;
+                return -1;
             }
         } else {
-            return Error;
+            return -1;
         }
     }
 };
